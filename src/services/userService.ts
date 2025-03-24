@@ -4,8 +4,7 @@ import User from "../models/User";
 import { LoginType, LoginUserType, RegisterType, UserType } from "../types";
 
 const registerUser = async (creds: UserType): Promise<RegisterType> => {
-  const { name, email, password } = creds;
-  console.log(name, email, password);
+  const { firstName, lastName, email, password, profileImg } = creds;
   const userExist = await User.findOne({ email });
   if (userExist) {
     return {
@@ -18,10 +17,24 @@ const registerUser = async (creds: UserType): Promise<RegisterType> => {
   try {
     const salt = await bcryptjs.genSalt(10);
     const hashedPassword = await bcryptjs.hash(password, salt);
-    const user = new User({ name, email, password: hashedPassword });
+    const user = new User({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+      profileImg,
+    });
     await user.save();
     if (user) {
-      return { user, err: false, msg: "User created" };
+      return {
+        user: {
+          name: user.firstName + user.lastName,
+          email: user.email,
+          profileImg: user.profileImg,
+        },
+        err: false,
+        msg: "User created",
+      };
     } else {
       return { user: {}, err: true, msg: "Error saving user" };
     }
@@ -50,7 +63,6 @@ const loginUser = async (creds: LoginUserType): Promise<LoginType> => {
     }
 
     if (userExist.password) {
-      console.log({ userpass: userExist.password, password: password });
       const passMatch = await bcryptjs.compare(password, userExist.password);
       if (!passMatch) {
         return { user: {}, token: "", err: true, msg: "Check password" };
@@ -59,14 +71,24 @@ const loginUser = async (creds: LoginUserType): Promise<LoginType> => {
       if (process.env.JWT_SECRET) {
         token = jwt.sign(
           {
-            user: userExist._id,
+            id: userExist.id,
           },
           process.env["JWT_SECRET"],
           { expiresIn: 60 * 60 }
         );
       }
       if (token) {
-        return { user: userExist, token, err: false, msg: "Logged in" };
+        return {
+          user: {
+            id: userExist.id,
+            name: userExist.firstName + " " + userExist.lastName,
+            email: userExist.email,
+            profileImg:userExist.profileImg
+          },
+          token,
+          err: false,
+          msg: "Logged in",
+        };
       } else {
         return {
           user: {},

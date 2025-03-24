@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { RegisterSchema, LoginSchema } from "./utils/index";
+import { RegisterSchema, LoginSchema,LinkSchema } from "./utils/index";
 
 export interface RegisterType {
   user: object;
@@ -14,7 +14,15 @@ export interface LoginType {
   msg: string;
 }
 
+export interface CreateLinkType {
+  link: object;
+  err: boolean;
+  msg: string;
+}
+
 
 export type UserType = z.infer<typeof RegisterSchema>;
 
 export type LoginUserType = z.infer<typeof LoginSchema>;
+
+export type LinkType = z.infer<typeof LinkSchema>;

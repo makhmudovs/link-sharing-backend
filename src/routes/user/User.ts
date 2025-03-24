@@ -61,6 +61,7 @@ router.post(
     res: Response<LoginType>
   ) => {
     const { user, token, err, msg } = await loginUser(req.body);
+    
     if (!err) {
       res.send({ user, token, err, msg });
     } else {
