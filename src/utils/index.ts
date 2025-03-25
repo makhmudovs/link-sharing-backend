@@ -33,4 +33,24 @@ const LinkSchema = z.object({
   }),
 });
 
-export { RegisterSchema, LoginSchema, LinkSchema };
+const getLinksSchema = z.object({
+  user: z.object({
+    _id: z.string(),
+  }),
+});
+
+const updateLinkSchema = z.object({
+  link: z.string().nonempty(),
+  platform: z.string().nonempty(),
+  user: z.object({
+    _id: z.string(),
+  }),
+});
+
+export {
+  RegisterSchema,
+  LoginSchema,
+  LinkSchema,
+  getLinksSchema,
+  updateLinkSchema,
+};

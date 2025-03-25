@@ -2,7 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import { z } from "zod";
 import { loginUser, registerUser } from "../../services/userService";
 import { LoginSchema, RegisterSchema } from "../../utils/index";
-import { LoginType, LoginUserType, RegisterType, UserType } from "../../types";
+import { LoginResponse, LoginUserType, RegisterResponse, UserType } from "../../types";
 
 const router = express.Router();
 
@@ -33,7 +33,7 @@ router.post(
   newUserParser,
   async (
     req: Request<unknown, unknown, UserType>,
-    res: Response<RegisterType>
+    res: Response<RegisterResponse>
   ) => {
     const { user, err, msg } = await registerUser(req.body);
     if (!err) {
@@ -58,7 +58,7 @@ router.post(
   loginUserParser,
   async (
     req: Request<unknown, unknown, LoginUserType>,
-    res: Response<LoginType>
+    res: Response<LoginResponse>
   ) => {
     const { user, token, err, msg } = await loginUser(req.body);
     

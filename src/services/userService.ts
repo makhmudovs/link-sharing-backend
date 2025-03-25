@@ -1,9 +1,9 @@
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User";
-import { LoginType, LoginUserType, RegisterType, UserType } from "../types";
+import { LoginResponse, LoginUserType, RegisterResponse, UserType } from "../types";
 
-const registerUser = async (creds: UserType): Promise<RegisterType> => {
+const registerUser = async (creds: UserType): Promise<RegisterResponse> => {
   const { firstName, lastName, email, password, profileImg } = creds;
   const userExist = await User.findOne({ email });
   if (userExist) {
@@ -48,7 +48,7 @@ const registerUser = async (creds: UserType): Promise<RegisterType> => {
   return { user: {}, err: true, msg: "Unknown error occurred" };
 };
 
-const loginUser = async (creds: LoginUserType): Promise<LoginType> => {
+const loginUser = async (creds: LoginUserType): Promise<LoginResponse> => {
   const { email, password } = creds;
 
   try {

@@ -1,9 +1,14 @@
 import express, { NextFunction, Request, Response } from "express";
 import { z } from "zod";
-import { createLink } from "../../services/linkService";
-import { LinkSchema } from "../../utils/index";
+import {
+  createLink,
+  getLink,
+  getLinks,
+  updateLink,
+} from "../../services/linkService";
+import { LinkSchema, updateLinkSchema } from "../../utils/index";
 import { auth } from "../../middlewares/auth";
-import { CreateLinkType, LinkType } from "../../types";
+import { CreateLinkResponse, LinkType } from "../../types";
 
 const router = express.Router();
 
@@ -35,10 +40,83 @@ router.post(
   newLinkParser,
   async (
     req: Request<unknown, unknown, LinkType>,
-    res: Response<CreateLinkType>
+    res: Response<CreateLinkResponse>
   ) => {
     try {
       const { link, err, msg } = await createLink(req.body);
+      if (!err) {
+        res.send({ link, err, msg });
+      } else {
+        res.status(400).send({ link: {}, err, msg });
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({
+          link: {},
+          err: true,
+          msg: "Internal Error " + error.message,
+        });
+      }
+    }
+  }
+);
+
+router.get("/", auth, async (req: Request, res: Response) => {
+  try {
+    const { links, err, msg } = await getLinks(req.body);
+    if (!err) {
+      res.send({ links, err, msg });
+    } else {
+      res.status(400).send({ link: {}, err, msg });
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).send({
+        link: {},
+        err: true,
+        msg: "Internal Error " + error.message,
+      });
+    }
+  }
+});
+
+router.get("/:id", auth, async (req: Request, res: Response) => {
+  const linkId = req.params.id;
+  try {
+    const { link, err, msg } = await getLink(linkId);
+    if (!err) {
+      res.send({ link, err, msg });
+    } else {
+      res.status(400).send({ link: {}, err, msg });
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).send({
+        link: {},
+        err: true,
+        msg: "Internal Error " + error.message,
+      });
+    }
+  }
+});
+
+const updateLinkParser = (req: Request, _res: Response, next: NextFunction) => {
+  try {
+    updateLinkSchema.parse(req.body);
+    next();
+  } catch (error: unknown) {
+    next(error);
+  }
+};
+
+router.put(
+  "/:id",
+  auth,
+  updateLinkParser,
+  async (req: Request, res: Response) => {
+    const linkId = req.params.id;
+    try {
+      const { link, err, msg } = await updateLink(linkId, req.body);
       if (!err) {
         res.send({ link, err, msg });
       } else {
