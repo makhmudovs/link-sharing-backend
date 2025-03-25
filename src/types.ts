@@ -42,3 +42,5 @@ export type LinkType = z.infer<typeof LinkSchema>;
 export type GetLinksType = z.infer<typeof getLinksSchema>;
 
 export type UpdateLinkType = z.infer<typeof updateLinkSchema>;
+
+

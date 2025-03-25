@@ -47,6 +47,7 @@ const updateLinkSchema = z.object({
   }),
 });
 
+
 export {
   RegisterSchema,
   LoginSchema,

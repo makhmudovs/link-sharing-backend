@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import { z } from "zod";
 import {
   createLink,
+  deleteLink,
   getLink,
   getLinks,
   updateLink,
@@ -133,6 +134,26 @@ router.put(
     }
   }
 );
+
+router.delete('/:id',auth,async (req:Request,res:Response)=>{
+  const linkId = req.params.id;
+    try {
+      const { err, msg } = await deleteLink(linkId, req.body);
+      if (!err) {
+        res.send({ err, msg });
+      } else {
+        res.status(400).send({ link: {}, err, msg });
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({
+          link: {},
+          err: true,
+          msg: "Internal Error " + error.message,
+        });
+      }
+    }
+})
 
 router.use(errorMiddleware);
 

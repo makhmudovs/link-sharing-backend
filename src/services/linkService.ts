@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Link from "../models/Links";
 import User from "../models/User";
 import {
@@ -100,4 +101,45 @@ const updateLink = async (
   }
 };
 
-export { createLink, getLinks, getLink, updateLink };
+const deleteLink = async (linkId: string, body: GetLinksType) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const deletedLink = await Link.findOneAndDelete({ _id: linkId }).session(
+      session
+    );
+
+    if (!deletedLink) {
+      throw new Error("Link not found or already deleted.");
+    }
+
+    const user = await User.findById(body.user._id).session(session);
+
+    if (!user) {
+      throw new Error("User not found.");
+    }
+
+    user.links = user.links.filter((link) => link.toString() !== linkId);
+
+    await user.save({ session });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return { err: false, msg: "Link deleted successfully" };
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+
+    return {
+      err: true,
+      msg:
+        error instanceof Error
+          ? error.message
+          : "An unknown error occurred while deleting the link.",
+    };
+  }
+};
+
+export { createLink, getLinks, getLink, updateLink, deleteLink };
