@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from 'cors';
 import { connectDb } from "./db";
 import userRoutes from "./routes/user/User";
+import linkRoutes from './routes/links/Links';
 
 //for env file
 dotenv.config();
@@ -25,6 +26,7 @@ app.use(express.json());
 
 
 app.use("/api/user", userRoutes);
+app.use("/api/links", linkRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
