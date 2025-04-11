@@ -13,11 +13,11 @@ const userSchema = new Schema<IUser>(
   {
     firstName: {
       type: String,
-      required: false, // Changed to optional (false) for test
+      required: true, // Changed to optional (false) for test
     },
     lastName: {
       type: String,
-      required: false, // Changed to optional (false) for test
+      required: true, // Changed to optional (false) for test
     },
     email: {
       type: String,
@@ -31,7 +31,7 @@ const userSchema = new Schema<IUser>(
     },
     profileImg: {
       type: String,
-      required: false, // Changed to optional (false) for test
+      required: true, // Changed to optional (false) for test
     },
     links: {
       type: [String],
