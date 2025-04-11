@@ -1,8 +1,14 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, Document, Types } from "mongoose";
 
-const linkSchema = new mongoose.Schema(
+export interface ILink extends Document {
+  url: string;
+  owner: Types.ObjectId;
+  platform: string;
+}
+
+const linkSchema = new Schema<ILink>(
   {
-    link: { type: String, required: true },
+    url: { type: String, required: true },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -14,6 +20,7 @@ const linkSchema = new mongoose.Schema(
     },
   },
   {
+    timestamps: true,
     toJSON: {
       transform: (doc, ret) => {
         ret.id = ret._id.toString();
@@ -21,10 +28,7 @@ const linkSchema = new mongoose.Schema(
         delete ret.__v;
       },
     },
-    timestamps: true,
   }
 );
 
-const Link = mongoose.model("Link", linkSchema);
-
-export default Link;
+export const Link = mongoose.model<ILink>("Link", linkSchema);
